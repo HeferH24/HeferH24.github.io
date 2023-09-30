@@ -96,7 +96,7 @@ function generate_solution() {
     } 
     for(let m = 0, k = 0; m < 9; m++) {
         for(let q = 0; q < 9; q++, k++) {
-            if(!belongs(k, u_hidden)) { // if is not a hidden cell (hidden index) then it can be set to the html grid 
+            if(!belongs(k, u_hidden)) { // we display them if they are not clasified as hidden 
                 grid[k].textContent = base_solution[m][q]; 
             }
         }
@@ -130,39 +130,38 @@ for(let x = 0; x < buttons.length; x++) {
     buttons[x].addEventListener('click', function(){
         selected = parseInt(buttons[x].textContent);
     }); 
-}
+} 
 
 for(let i = 0; i < grid.length; i++) { // event for the cells 
     grid[i].addEventListener('click', function(e){
-        
         // there is no overwrite option to something we put 
         if(selected != 0 && (grid[i].textContent == '')) { // si esta disponible y se ha seleccionado algo 
             grid[i].textContent = selected; // before so that when we win, the writen cell gets to ''
             
             if(selected == base_solution[Math.floor(i / 9)][i % 9]) {
                 grid[i].style.color="green";   
-                correct_counter++; 
                 success_sound.play();
-                if(correct_counter == hidden.length) { // +1 win 
-                    streak_counter.textContent = "Streak: " + (++streak);
-                    correct_counter = 0;  // we should call restart right? i dont know how rn 
-                    generate_solution();
+        
+                if(++correct_counter == hidden.length) { // +1 win 
+                    streak_counter.textContent = "Racha: " + (++streak);
+                    restart_btn.click(); 
                 } 
             } else {
                 grid[i].style.color="red";   
                 wrong_sound.play();     
             } 
+            // grid[i].style.backgroundColor = "gray";  // just for aestetic purpose 
             selected = 0; // so that we need to press again to put a number ; deselect 
 
         } else if(erase_mode == true && belongs(i, hidden)) { // solo se pueden borrar los ocultos 
             grid[i].textContent = ''; 
-            erase_mode = false; 
+            erase_mode = false;  
             grid[i].style.backgroundColor = "#DDE"; // in case it was highlighted 
-            
             if(grid[i].style.color=="green") // if we erase something right we decrement 
                 correct_counter--; 
 
         } else { // asume that we only click on number of the grid to see its ocurrences 
+
             for(let k = 0; k < grid.length; k++) { // reset if there was highlighted number already 
                 for(let t = 0; t < 9; t++) {
                     if(grid[k].textContent == shaded_number)  
